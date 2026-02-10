@@ -118,5 +118,19 @@ public class MensRepository {
                 .list();
     }
 
+    public Optional<Mens> findAndLockById(long id) {
+        var sql = """
+                select id, naam, geld
+                from mensen
+                where id = ?
+                for update
+                """;
+
+        return jdbcClient.sql(sql)
+                .param(id)
+                .query(Mens.class)
+                .optional();
+    }
+
 
 }

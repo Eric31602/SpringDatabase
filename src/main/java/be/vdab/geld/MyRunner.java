@@ -34,6 +34,7 @@ public class MyRunner implements CommandLineRunner {
         } catch (OnvoldoendeGeldException ex) {
             IO.println("Schenking mislukt. Onvoldoende geld.");
         }
+        mensService.findSchenkStatistiekPerMens().forEach(IO::println);
     }
 
 }

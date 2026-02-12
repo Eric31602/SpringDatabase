@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 @JdbcTest
 @Import(MensRepository.class)
-@Sql("/mensen.sql")
+@Sql({"/mensen.sql", "/schenkingen.sql"})
 public class MensRepositoryTest {
     private final MensRepository mensRepository;
     private final JdbcClient jdbcClient;
@@ -127,5 +127,20 @@ public class MensRepositoryTest {
                 .hasSize(2)
                 .extracting(Mens::getId)
                 .containsOnly(id1, id2);
+    }
+
+    @Test
+    void findSchenkStatistiekPerMensVindtDeJuisteData() {
+        var statistiek = mensRepository.findSchenkStatistiekPerMens();
+        assertThat(statistiek).hasSize(jdbcClient.sql(
+                        "select count(distinct vanMensId) from schenkingen")
+                .query(Integer.class).single())
+.extracting(SchenkStatistiekPerMens::id).isSorted();
+        assertThat(statistiek).anySatisfy(eenItem -> {
+            assertThat(eenItem.id()).isEqualTo(idVanTestMens2());
+            assertThat(eenItem.naam()).isEqualTo("test2");
+            assertThat(eenItem.aantal()).isEqualTo(2);
+            assertThat(eenItem.totaal()).isEqualByComparingTo("300");
+        });
     }
 }

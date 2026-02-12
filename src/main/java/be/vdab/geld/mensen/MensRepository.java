@@ -132,5 +132,18 @@ public class MensRepository {
                 .optional();
     }
 
+    public List<SchenkStatistiekPerMens> findSchenkStatistiekPerMens() {
+        var sql = """
+                select mensen.id, naam, count(schenkingen.id) as aantal, sum(bedrag) as totaal
+                from mensen inner join schenkingen
+                on mensen.id = schenkingen.vanMenIsd
+                group by mensen.id
+                order by mensen.id
+                """;
+
+        return jdbcClient.sql(sql)
+                .query(SchenkStatistiekPerMens.class)
+                .list();
+    }
 
 }

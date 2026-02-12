@@ -45,4 +45,8 @@ public class MensService {
         mensRepository.update(aanMens);
         schenkingRepository.create(schenking);
     }
+
+    public List<SchenkStatistiekPerMens> findSchenkStatistiekPerMens() {
+        return mensRepository.findSchenkStatistiekPerMens();
+    }
 }
